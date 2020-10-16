@@ -124,7 +124,7 @@ class Register extends \Opencart\System\Engine\Controller {
 				$json['error']['lastname'] = $this->language->get('error_lastname');
 			}
 
-			if ((utf8_strlen($this->request->post['email']) > 96) || !filter_var($this->request->post['email'], FILTER_VALIDATE_EMAIL)) {
+			if ((utf8_strlen(trim($this->request->post['email'])) > 96) || !filter_var($this->request->post['email'], FILTER_VALIDATE_EMAIL)) {
 				$json['error']['email'] = $this->language->get('error_email');
 			}
 
@@ -203,7 +203,7 @@ class Register extends \Opencart\System\Engine\Controller {
 
 			$extension_info = $this->model_setting_extension->getExtensionByCode($this->config->get('config_captcha'));
 
-			if ($extension_info && $this->config->get('captcha_' . $this->config->get('config_captcha') . '_status') && in_array('register', (array)$this->config->get('config_captcha_page'))) {
+			if ($extension_info && $this->config->get('captcha_' . $this->config->get('config_captcha') . '_status') && !empty($this->config->get('config_captcha_page')) && is_array($this->config->get('config_captcha_page')) && in_array('register', $this->config->get('config_captcha_page'))) {
 				$captcha = $this->load->controller('extension/'  . $extension_info['extension'] . '/captcha/' . $extension_info['code'] . '|validate');
 
 				if ($captcha) {
@@ -246,10 +246,22 @@ class Register extends \Opencart\System\Engine\Controller {
 			}
 
 			unset($this->session->data['guest']);
-			unset($this->session->data['shipping_method']);
-			unset($this->session->data['shipping_methods']);
-			unset($this->session->data['payment_method']);
-			unset($this->session->data['payment_methods']);
+			
+			if (isset($this->session->data['shipping_method'])) {
+				unset($this->session->data['shipping_method']);
+			}
+			
+			if (isset($this->session->data['shipping_methods'])) {
+				unset($this->session->data['shipping_methods']);
+			}
+			
+			if (isset($this->session->data['payment_method'])) {
+				unset($this->session->data['payment_method']);
+			}
+			
+			if (isset($this->session->data['payment_methods'])) {
+				unset($this->session->data['payment_methods']);
+			}
 		}
 
 		$this->response->addHeader('Content-Type: application/json');
