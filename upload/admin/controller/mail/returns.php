@@ -44,7 +44,7 @@ class Returns extends \Opencart\System\Engine\Controller {
 
 				$language = new \Opencart\Engine\Library\Language($language_code);
 				$language->load($language_code);
-				$language->load('mail/return');
+				$language->load('mail/returns');
 
 				$data['return_id'] = $return_id;
 				$data['date_added'] = date($language->get('date_format_short'), strtotime($return_info['date_modified']));
